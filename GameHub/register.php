@@ -1,0 +1,1 @@
+<!-- PAGE D'INSCRIPTION: PERMET DE CREER UN COMPTE email()+identifiant+mot de passe +sexe+age-->
