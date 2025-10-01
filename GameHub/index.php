@@ -1,6 +1,20 @@
 <!-- NavBar border radius, shadow box, profil a gauche, rechercher un jeu au centre, se deconnecter/se conecter a droit etoiles avec les favoris -->
   <?php session_start(); 
 
+//Connexion a la base de données 
+  $host = 'localhost';
+  $dbname = 'GameHub';
+  $user = 'root'; // A modifier pour déploiement
+  $pass = ''; // A modifier pour déploiement
+
+  $role = $_SESSION['role'];
+
+  try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
   ?>
 
   <!DOCTYPE html>
@@ -173,8 +187,9 @@
   </style>
   </head>
 
-  <body>
-
+<body>
+  <!-- PAGE POUR LES JOUEURS -->
+ <?php if ($role === 'joueur'): ?>
 <nav>
         <div class="nav-container">
             <a href="index.php" class="logo">
@@ -182,15 +197,15 @@
             </a>
               
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="Rechercher...">
+                <input type="text" class="search-input" placeholder="Rechercher un jeu">
             </div>
 
-            <a href="login.php"><button class="btn-connect">Se connecter</button></a>
-
-            <a href="register.php"><button class="btn-connect">S'inscrire</button></a>
+            <a href="login.php"><button class="btn-connect">Se déconnecter</button></a>
+            <a href="favorite.php"><button class="btn-connect">Mes Favoris</button></a>
+            <!-- <a href="register.php"><button class="btn-connect">S'inscrire</button></a> -->
         </div>
     </nav>
-          </div>
+</div>
 
  <div class="gallery-container">
     <span style="--i:1; transform: rotateY(calc(360deg / 8 * 1)) translateZ(350px);">
@@ -218,7 +233,54 @@
       <img src="8.jpg" alt="">
     </span>
   </div> 
+<?php endif; ?>
 
+<!-- PAGE POUR LES Visiteur -->
+ <?php if ($role === ''): ?>
+  <body>
+<nav>
+        <div class="nav-container">
+            <a href="index.php" class="logo">
+                <span>GAME HUB</span>
+            </a>
+              
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Rechercher un jeu">
+            </div>
+
+            <a href="login.php"><button class="btn-connect">Se connecter</button></a>
+            <a href="register.php"><button class="btn-connect">S'inscrire</button></a>
+        </div>
+    </nav>
+</div>
+
+ <div class="gallery-container">
+    <span style="--i:1; transform: rotateY(calc(360deg / 8 * 1)) translateZ(350px);">
+      <img src="1.jpg" alt="">
+    </span>
+    <span style="--i:2; transform: rotateY(calc(360deg / 8 * 2)) translateZ(350px);">
+      <img src="2.jpg" alt="">
+    </span>
+    <span style="--i:3; transform: rotateY(calc(360deg / 8 * 3)) translateZ(350px);">
+      <img src="3.jpg" alt="">
+    </span>
+    <span style="--i:4; transform: rotateY(calc(360deg / 8 * 4)) translateZ(350px);">
+      <img src="4.jpg" alt="">
+    </span>
+    <span style="--i:5; transform: rotateY(calc(360deg / 8 * 5)) translateZ(350px);">
+      <img src="5.jpg" alt="">
+    </span>
+    <span style="--i:6; transform: rotateY(calc(360deg / 8 * 6)) translateZ(350px);">
+      <img src="6.jpg" alt="">
+    </span>
+    <span style="--i:7; transform: rotateY(calc(360deg / 8 * 7)) translateZ(350px);">
+      <img src="7.jpg" alt="">
+    </span>
+    <span style="--i:8; transform: rotateY(calc(360deg / 8 * 8)) translateZ(350px);">
+      <img src="8.jpg" alt="">
+    </span>
+  </div> 
+<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   </body>

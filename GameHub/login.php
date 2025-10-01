@@ -1,7 +1,52 @@
 <!-- PAGE DE CONNEXION HTML/PHP
  PERMET LA CONNEXION DE L'ENSEMBLE DES UTILISATEUR IDENTIFIANT + MOT DE PASSE *mot de passe oublié + Bouton se connecter -->
   <?php session_start(); 
-  
+
+  //Connexion a la base de données 
+  $host = 'localhost';
+  $dbname = 'GameHub';
+  $user = 'root'; // A modifier pour déploiement
+  $pass = ''; // A modifier pour déploiement
+
+  try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $identifiant = htmlspecialchars(trim($_POST['identifiant'] ?? ''));
+    $Motdepasse = htmlspecialchars(trim($_POST['Motdepasse'] ?? ''));
+
+    if (!empty($identifiant) && !empty($Motdepasse)) {
+        // Préparer et exécuter la requête
+        $stmt = $pdo->prepare("SELECT * FROM joueurs WHERE identifiant = :identifiant");
+        $stmt->bindParam(':identifiant', $identifiant);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Vérification du mot de passe
+   if ($user && password_verify($Motdepasse, $user['Motdepasse'])) {
+    $_SESSION['identifant'] = $nom;
+    $_SESSION['role'] = $user['role'];
+
+    // Redirection vers une page commune
+    header('Location: index.php');
+    exit();
+
+   } else {
+            $_SESSION['login_error'] = "Nom d'utilisateur ou mot de passe incorrect.";
+            header('Location: login.php'); // Redirection après une erreur de connexion
+            exit();
+        }
+    } else {
+        $_SESSION['login_error'] = "Veuillez remplir tous les champs.";
+        header('Location: login.php'); // Redirection si les champs sont vides
+        exit();
+    }
+}
+
   ?>
 
   <!DOCTYPE html>
@@ -19,7 +64,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Gaming Platform</title>
+    <title>Connexion - Game Hub</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -259,12 +304,25 @@
                 <p>Connectez-vous pour continuer</p>
             </div>
 
-            <form id="loginForm">
+            <form id="loginForm" method="POST" action="login.php">
+                
+                <?php if (isset($_GET['error'])): ?>
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($_GET['error']) ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success">
+            <?= htmlspecialchars($_GET['success']) ?>
+        </div>
+    <?php endif; ?>
+
                 <div class="form-group">
                     <label class="form-label">Identifiant</label>
                     <div class="input-group">
                         <i class="fas fa-user input-icon"></i>
-                        <input type="text" class="form-control" placeholder="Entrez votre identifiant" required>
+                        <input type="text" class="form-control" name="identifiant" placeholder="Entrez votre identifiant" required>
                     </div>
                 </div>
 
@@ -272,7 +330,7 @@
                     <label class="form-label">Mot de passe</label>
                     <div class="input-group">
                         <i class="fas fa-lock input-icon"></i>
-                        <input type="password" class="form-control" placeholder="Entrez votre mot de passe" required>
+                        <input type="password" class="form-control" name="Motdepasse" placeholder="Entrez votre mot de passe" required>
                     </div>
                 </div>
 
