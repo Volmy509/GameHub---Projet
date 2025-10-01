@@ -1,5 +1,7 @@
 CREATE DATABASE IF NOT EXISTS GameHub;
 
+Use GameHub;
+
 CREATE TABLE joueurs (
     ID int AUTO_INCREMENT primary key not null,
     identifiant VARCHAR(150),
