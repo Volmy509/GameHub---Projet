@@ -17,34 +17,44 @@
 // Envoie du formulaire en method POST vers la Bdd
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identifiant = trim($_POST['identifiant']?? '');
-    $Mail = trim($_POST['Mail']?? '');
-    $Motdepasse = $_POST['Motdepasse']?? '';
-    $confirm_password = $_POST["confirm_password"];
+    $identifiant = trim($_POST['identifiant'] ?? '');
+    $Mail = trim($_POST['Mail'] ?? '');
+    $Motdepasse = $_POST['Motdepasse'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
     $role = 'joueur';
 
-
-// Vérification des mots de passe et champs "dupliquer"
-        if ($Motdepasse !== $confirm_password) {
-            header("Location: register_form.php?error=❌ Les mots de passe ne correspondent pas.");
-            exit;
-        }
-
-if (!empty($Motdepasse) && !empty($Mail)) {
-    $check = $pdo->prepare("SELECT * FROM joueurs WHERE Mail = :Mail OR identifiant = :identifiant");
-    $check->execute(['Mail' => $Mail, 'identifiant' => $identifiant]);
-
-    if ($check->fetch()){
-        $_SESSION['register_error'] = "Cette adresse mail ou cet identifiant existe déjà.";
-        header("Location: register.php");
+    // Vérifications des champs requis
+    if (empty($identifiant) || empty($Mail) || empty($Motdepasse) || empty($confirm_password)) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Veuillez remplir tous les champs.'];
+        header('Location: register.php');
         exit();
     }
-}
 
-    // Hash et insertion SEULEMENT si l'utilisateur n'existe pas
+    // Vérification du format email
+    if (!filter_var($Mail, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Adresse e-mail invalide.'];
+        header('Location: register.php');
+        exit();
+    }
+
+    // Vérification des mots de passe
+    if ($Motdepasse !== $confirm_password) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Les mots de passe ne correspondent pas.'];
+        header('Location: register.php');
+        exit();
+    }
+
+    // Vérifier doublons
+    $check = $pdo->prepare("SELECT * FROM joueurs WHERE Mail = :Mail OR identifiant = :identifiant");
+    $check->execute(['Mail' => $Mail, 'identifiant' => $identifiant]);
+    if ($check->fetch()) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Cette adresse mail ou cet identifiant existe déjà.'];
+        header('Location: register.php');
+        exit();
+    }
+
+    // Hash et insertion
     $hash = password_hash($Motdepasse, PASSWORD_DEFAULT);
-
-    // Insertion dans la Bdd
     $stmt = $pdo->prepare("INSERT INTO joueurs(identifiant, Mail, Motdepasse, role) VALUES (:identifiant, :Mail, :Motdepasse, :role)");
     $stmt->execute([
         'identifiant' => $identifiant,
@@ -53,9 +63,8 @@ if (!empty($Motdepasse) && !empty($Mail)) {
         'role' => $role,
     ]);
 
-  //Message 
-   $_SESSION['register_success'] = "✅ Compte créé avec succès ! Vous pouvez vous connecter.";
-    header("Location: login.php");
+    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Compte créé avec succès ! Vous pouvez vous connecter.'];
+    header('Location: login.php');
     exit();
 }
   ?>
@@ -317,16 +326,12 @@ if (!empty($Motdepasse) && !empty($Mail)) {
 
             <form id="loginForm" method="POST" action="register.php">
 
-                 <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger">
-            <?= htmlspecialchars($_GET['error']) ?>
+                 <?php if (isset($_SESSION['flash'])): ?>
+        <?php $f = $_SESSION['flash']; ?>
+        <div class="alert alert-<?= ($f['type'] === 'success') ? 'success' : 'danger' ?>">
+            <?= htmlspecialchars($f['message']) ?>
         </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success">
-            <?= htmlspecialchars($_GET['success']) ?>
-        </div>
+        <?php unset($_SESSION['flash']); ?>
     <?php endif; ?>
 
                 <div class="form-group">

@@ -7,7 +7,7 @@
   $user = 'root'; // A modifier pour déploiement
   $pass = ''; // A modifier pour déploiement
 
-  $role = $_SESSION['role'];
+  $role = $_SESSION['role'] ?? '';
 
   try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
@@ -23,49 +23,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🕹️ GameHub </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      background: linear-gradient(135deg, #000a97ff 0%, #b918c8ff 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
+  body {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: #fff;
+  margin:0;
+  padding: 80px;
+  background: linear-gradient(135deg,#030426 0%, #0b0620 100%);
+  }
+   /* Navbar avec effet glassmorphism */
+ nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 1rem 2rem;
+  }
 
-    /* Navbar avec effet glassmorphism */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            padding: 1rem 2rem;
-        }
+  .nav-container {
+    max-width: 1250px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+  }
 
-        .nav-container {
-            max-width: 1250px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between; 
-            align-items: center; 
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+  }
 
         .logo img {
             width: 40px;
@@ -138,53 +136,76 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-    .gallery-container {
-      position: relative;
-      width: 250px;
-      height: 350px;
-      transform-style: preserve-3d;
-      animation: spin 20s linear infinite;
-    }
+        .navbar nav, nav{
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+}
 
-    .gallery-container span {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      transform-origin: center;
-      transform-style: preserve-3d;
-      transition: transform 0.5s, z-index 0.5s;
-    }
+.container{max-width:1200px;margin:6.5rem auto 2rem;}
+.page-title{margin:1rem 0 1.5rem;font-size:1.4rem;color:#fff;text-align:left}
 
-    .gallery-container img {
-      width: 100%;
-      height: 100%;
-      margin-top: 30px;
-      object-fit: cover;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-      transition: transform 0.5s;
-      cursor: pointer;
-    }
+/* Cards grid */
+.cards-area{margin-top:2rem}
+.cards-title{color:#fff;margin-bottom:1rem}
+.cards{
+  display:grid;
+  grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+  gap:1.1rem;
+}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
+  border-radius:12px;
+  overflow:hidden;
+  position:relative;
+  min-height:260px;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.6);
+  transition: transform .28s ease, box-shadow .28s ease;
+  display:flex;
+  flex-direction:column;
+}
+.card:hover{
+  transform: translateY(-8px);
+  box-shadow:0 18px 40px rgba(2,6,23,0.7)
+}
 
-    /* Animation de rotation */
-    @keyframes spin {
-      0% { transform: perspective(1000px) rotateY(0deg); }
-      100% { transform: perspective(1000px) rotateY(360deg); }
-    }
+.card-image{
+  height:180px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
 
-    /* Hover : mettre l'image au premier plan */
-    .gallery-container span:hover {
-      transform: scale(1.3) translateZ(150px);
-      z-index: 100;
-    }
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 
-    .gallery-container span:hover img {
-      transform: scale(1.1);
-    }
+.card-desc{
+  margin-top:auto; /* stick to bottom */
+  padding:14px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.45));
+  color:#fff;
+  backdrop-filter: blur(6px);
+}
+.card-desc h3{
+  margin:0 0 6px;
+  font-size:1.05rem
+}
+.card-desc p{
+  margin:0;
+  font-size:0.9rem;
+  opacity:0.95}
 
-  </style>
+/* Responsive tweaks */
+@media (max-width:520px){
+  .card-image{height:130px}
+  .cards{gap:.8rem}
+}
+</style>
   </head>
 
 <body>
@@ -200,44 +221,17 @@
                 <input type="text" class="search-input" placeholder="Rechercher un jeu">
             </div>
 
-            <a href="login.php"><button class="btn-connect">Se déconnecter</button></a>
+            <a href="logout.php"><button class="btn-connect">Se déconnecter</button></a>
             <a href="favorite.php"><button class="btn-connect">Mes Favoris</button></a>
             <!-- <a href="register.php"><button class="btn-connect">S'inscrire</button></a> -->
         </div>
     </nav>
 </div>
 
- <div class="gallery-container">
-    <span style="--i:1; transform: rotateY(calc(360deg / 8 * 1)) translateZ(350px);">
-      <img src="1.jpg" alt="">
-    </span>
-    <span style="--i:2; transform: rotateY(calc(360deg / 8 * 2)) translateZ(350px);">
-      <img src="2.jpg" alt="">
-    </span>
-    <span style="--i:3; transform: rotateY(calc(360deg / 8 * 3)) translateZ(350px);">
-      <img src="3.jpg" alt="">
-    </span>
-    <span style="--i:4; transform: rotateY(calc(360deg / 8 * 4)) translateZ(350px);">
-      <img src="4.jpg" alt="">
-    </span>
-    <span style="--i:5; transform: rotateY(calc(360deg / 8 * 5)) translateZ(350px);">
-      <img src="5.jpg" alt="">
-    </span>
-    <span style="--i:6; transform: rotateY(calc(360deg / 8 * 6)) translateZ(350px);">
-      <img src="6.jpg" alt="">
-    </span>
-    <span style="--i:7; transform: rotateY(calc(360deg / 8 * 7)) translateZ(350px);">
-      <img src="7.jpg" alt="">
-    </span>
-    <span style="--i:8; transform: rotateY(calc(360deg / 8 * 8)) translateZ(350px);">
-      <img src="8.jpg" alt="">
-    </span>
-  </div> 
 <?php endif; ?>
 
 <!-- PAGE POUR LES Visiteur -->
- <?php if ($role === ''): ?>
-  <body>
+<?php if (empty($role)): ?>
 <nav>
         <div class="nav-container">
             <a href="index.php" class="logo">
@@ -253,35 +247,125 @@
         </div>
     </nav>
 </div>
-
- <div class="gallery-container">
-    <span style="--i:1; transform: rotateY(calc(360deg / 8 * 1)) translateZ(350px);">
-      <img src="1.jpg" alt="">
-    </span>
-    <span style="--i:2; transform: rotateY(calc(360deg / 8 * 2)) translateZ(350px);">
-      <img src="2.jpg" alt="">
-    </span>
-    <span style="--i:3; transform: rotateY(calc(360deg / 8 * 3)) translateZ(350px);">
-      <img src="3.jpg" alt="">
-    </span>
-    <span style="--i:4; transform: rotateY(calc(360deg / 8 * 4)) translateZ(350px);">
-      <img src="4.jpg" alt="">
-    </span>
-    <span style="--i:5; transform: rotateY(calc(360deg / 8 * 5)) translateZ(350px);">
-      <img src="5.jpg" alt="">
-    </span>
-    <span style="--i:6; transform: rotateY(calc(360deg / 8 * 6)) translateZ(350px);">
-      <img src="6.jpg" alt="">
-    </span>
-    <span style="--i:7; transform: rotateY(calc(360deg / 8 * 7)) translateZ(350px);">
-      <img src="7.jpg" alt="">
-    </span>
-    <span style="--i:8; transform: rotateY(calc(360deg / 8 * 8)) translateZ(350px);">
-      <img src="8.jpg" alt="">
-    </span>
-  </div> 
 <?php endif; ?>
+
+    <main class="cards-area container">
+      <section class="cards">
+        <article class="card">
+          <div class="card-image"><img src="images/NRU.png" alt=" "></div>
+          <div class="card-desc">
+            <h3>Nitro Racers Unleashed</h3>
+            <p>jeu de course automobile intense et rapide, 
+              mettant en scène une voiture de sport ailée sur fond de paysage urbain au coucher du soleil, 
+              symbolisant la vitesse et la liberté</p>
+              <!-- Bouton ajouter aux favoris -->
+              <form method="POST" action="favorite.php" style="margin-top:8px">
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="jeu_id" value="1">
+                <button class="btn-connect" type="submit">Mettre en favoris</button>
+              </form>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/SDAC.png" alt=" "></div>
+          <div class="card-desc">
+            <h3>Sky Dominators Ace Combat</h3>
+            <p>Plongez dans des batailles aériennes palpitantes où des as du pilotage s'affrontent 
+              dans les cieux pour dominer l'espace aérien à travers des missions intenses et réalistes.</p>
+            <form method="POST" action="favorite.php" style="margin-top:8px">
+              <input type="hidden" name="action" value="add">
+              <input type="hidden" name="jeu_id" value="2">
+              <button class="btn-connect" type="submit">Mettre en favoris</button>
+            </form>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/FLAS.png" alt="Mon jeu"></div>
+          <div class="card-desc">
+            <h3>Football Legends Ace Stiker</h3>
+            <p>Vivez l'excitation du beau jeu en prenant le contrôle de votre équipe favorite, 
+              en exécutant des tactiques complexes et en marquant des buts spectaculaires pour remporter la victoire.</p>
+            <form method="POST" action="favorite.php" style="margin-top:8px">
+              <input type="hidden" name="action" value="add">
+              <input type="hidden" name="jeu_id" value="3">
+              <button class="btn-connect" type="submit">Mettre en favoris</button>
+            </form>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image"><img src="images/FFCC.png" alt="Mon jeu"></div>
+          <div class="card-desc">
+            <h3>Fighting Fury Clash Of Champions</h3>
+            <p>Maîtrisez un combattant unique doté de mouvements et de combos dévastateurs, 
+              et défiez des adversaires dans des duels épiques où seule la force et la stratégie décident du vainqueur.</p>
+            <form method="POST" action="favorite.php" style="margin-top:8px">
+              <input type="hidden" name="action" value="add">
+              <input type="hidden" name="jeu_id" value="4">
+              <button class="btn-connect" type="submit">Mettre en favoris</button>
+            </form>
+          </div>
+        </article>
+
+      </section>
+    </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   </body>
-  </html>
+
+    <!-- Script pour la recherche de jeux -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function() {
+                    let input = this.value.toLowerCase();
+                    let cards = document.querySelectorAll('.card');
+                    
+                    cards.forEach(function(card) {
+                        let title = card.querySelector('.card-desc h3')?.textContent.toLowerCase() || '';
+                        let description = card.querySelector('.card-desc p')?.textContent.toLowerCase() || '';
+                        let text = title + ' ' + description;
+                        
+                        if (text.includes(input)) {
+                            card.style.display = '';
+                            card.style.animation = 'fadeIn 0.3s ease-in';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    checkNoResults(cards, input);
+                });
+            }
+        });
+        
+        function checkNoResults(cards, input) {
+            let visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+            let oldMessage = document.querySelector('.no-results-message');
+            if (oldMessage) oldMessage.remove();
+            
+            if (visibleCards.length === 0 && input.trim() !== '') {
+                let message = document.createElement('div');
+                message.className = 'no-results-message';
+                message.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 3rem; color: rgba(255, 255, 255, 0.7);';
+                message.innerHTML = `
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">😔 Aucun jeu trouvé</h3>
+                    <p>Aucun jeu ne correspond à "${input}"</p>
+                `;
+                document.querySelector('.cards').appendChild(message);
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body>
+</html>

@@ -17,7 +17,7 @@
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identifiant = htmlspecialchars(trim($_POST['identifiant'] ?? ''));
-    $Motdepasse = htmlspecialchars(trim($_POST['Motdepasse'] ?? ''));
+    $Motdepasse = trim($_POST['Motdepasse'] ?? '');
 
     if (!empty($identifiant) && !empty($Motdepasse)) {
         // Préparer et exécuter la requête
@@ -27,22 +27,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Vérification du mot de passe
-   if ($user && password_verify($Motdepasse, $user['Motdepasse'])) {
-    $_SESSION['identifant'] = $nom;
-    $_SESSION['role'] = $user['role'];
+        if ($user && password_verify($Motdepasse, $user['Motdepasse'])) {
+            session_regenerate_id(true);
+            
+            $_SESSION['joueur_id'] = $user['ID'];
+            $_SESSION['identifiant'] = $user['identifiant'];
+            $_SESSION['role'] = $user['role'];
 
-    // Redirection vers une page commune
-    header('Location: index.php');
-    exit();
-
-   } else {
-            $_SESSION['login_error'] = "Nom d'utilisateur ou mot de passe incorrect.";
-            header('Location: login.php'); // Redirection après une erreur de connexion
+            header('Location: index.php');
+            exit();
+        } else {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => "Nom d'utilisateur ou mot de passe incorrect."];
+            header('Location: login.php');
             exit();
         }
     } else {
-        $_SESSION['login_error'] = "Veuillez remplir tous les champs.";
-        header('Location: login.php'); // Redirection si les champs sont vides
+        $_SESSION['flash'] = ['type' => 'error', 'message' => "Veuillez remplir tous les champs."];
+        header('Location: login.php');
         exit();
     }
 }
@@ -306,16 +307,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form id="loginForm" method="POST" action="login.php">
                 
-                <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger">
-            <?= htmlspecialchars($_GET['error']) ?>
+                <?php if (isset($_SESSION['flash'])): ?>
+        <?php $f = $_SESSION['flash']; ?>
+        <div class="alert alert-<?= ($f['type'] === 'success') ? 'success' : 'danger' ?>">
+            <?= htmlspecialchars($f['message']) ?>
         </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success">
-            <?= htmlspecialchars($_GET['success']) ?>
-        </div>
+        <?php unset($_SESSION['flash']); ?>
     <?php endif; ?>
 
                 <div class="form-group">
